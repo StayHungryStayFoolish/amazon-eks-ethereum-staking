@@ -139,9 +139,9 @@ export class Observe extends cdk.Stack {
         alertmaanger: {
           enabled: false
         },
-        grafana: {
-          enabled: false
-        },
+        // grafana: {
+        //   enabled: false
+        // },
         promtheusOperator: {
           tls: {
             enabled: false
@@ -156,57 +156,57 @@ export class Observe extends cdk.Stack {
       },
     });
 
-    const grafanaRole = new iam.Role(this, 'GrafanaRole', {
-      assumedBy: new iam.ServicePrincipal('grafana.amazonaws.com'),
-      description: 'Role used to administer Grafana workspace for Ethereum',
-      inlinePolicies: {
-        'list-amp': new iam.PolicyDocument({
-          statements: [
-            new iam.PolicyStatement({
-              actions: ['aps:ListWorkspaces'],
-              effect: iam.Effect.ALLOW,
-              resources: [
-                `arn:aws:aps:${this.region}:${this.account}:/workspaces`,
-              ],
-            }),
-          ],
-        }),
-        'query-amp': new iam.PolicyDocument({
-          statements: [
-            new iam.PolicyStatement({
-              actions: [
-                'aps:GetLabels',
-                'aps:GetMetricMetadata',
-                'aps:GetSeries',
-                'aps:QueryMetrics',
-                'aps:DescribeWorkspace',
-              ],
-              effect: iam.Effect.ALLOW,
-              resources: [cfnWorkspace.attrArn],
-            }),
-          ],
-        }),
-      },
-    });
+    // const grafanaRole = new iam.Role(this, 'GrafanaRole', {
+    //   assumedBy: new iam.ServicePrincipal('grafana.amazonaws.com'),
+    //   description: 'Role used to administer Grafana workspace for Ethereum',
+    //   inlinePolicies: {
+    //     'list-amp': new iam.PolicyDocument({
+    //       statements: [
+    //         new iam.PolicyStatement({
+    //           actions: ['aps:ListWorkspaces'],
+    //           effect: iam.Effect.ALLOW,
+    //           resources: [
+    //             `arn:aws:aps:${this.region}:${this.account}:/workspaces`,
+    //           ],
+    //         }),
+    //       ],
+    //     }),
+    //     'query-amp': new iam.PolicyDocument({
+    //       statements: [
+    //         new iam.PolicyStatement({
+    //           actions: [
+    //             'aps:GetLabels',
+    //             'aps:GetMetricMetadata',
+    //             'aps:GetSeries',
+    //             'aps:QueryMetrics',
+    //             'aps:DescribeWorkspace',
+    //           ],
+    //           effect: iam.Effect.ALLOW,
+    //           resources: [cfnWorkspace.attrArn],
+    //         }),
+    //       ],
+    //     }),
+    //   },
+    // });
 
-    const grafanaSg = new ec2.SecurityGroup(this, 'GrafanaSG', {
-      vpc: props.vpc,
-      allowAllOutbound: true,
-      description: 'Amazon Managed Grafana Security Group for Ethereum',
-    });
+    // const grafanaSg = new ec2.SecurityGroup(this, 'GrafanaSG', {
+    //   vpc: props.vpc,
+    //   allowAllOutbound: true,
+    //   description: 'Amazon Managed Grafana Security Group for Ethereum',
+    // });
 
-    new grafana.CfnWorkspace(this, 'Grafana', {
-      accountAccessType: 'CURRENT_ACCOUNT',
-      description: 'Ethereum Client',
-      permissionType: 'SERVICE_MANAGED',
-      roleArn: grafanaRole.roleArn,
-      authenticationProviders: ['AWS_SSO'],
-      notificationDestinations: ['SNS'],
-      vpcConfiguration: {
-        securityGroupIds: [grafanaSg.securityGroupId],
-        subnetIds: props.vpc.selectSubnets({ subnetGroupName: 'eks-nodes' })
-          .subnetIds,
-      },
-    });
+    // new grafana.CfnWorkspace(this, 'Grafana', {
+    //   accountAccessType: 'CURRENT_ACCOUNT',
+    //   description: 'Ethereum Client',
+    //   permissionType: 'SERVICE_MANAGED',
+    //   roleArn: grafanaRole.roleArn,
+    //   authenticationProviders: ['AWS_SSO'],
+    //   notificationDestinations: ['SNS'],
+    //   vpcConfiguration: {
+    //     securityGroupIds: [grafanaSg.securityGroupId],
+    //     subnetIds: props.vpc.selectSubnets({ subnetGroupName: 'eks-nodes' })
+    //       .subnetIds,
+    //   },
+    // });
   }
 }
